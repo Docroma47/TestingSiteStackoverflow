@@ -15,14 +15,17 @@ public class TestMainPage {
 
     @Before
     public void setMainPage() {
+        FirefoxBinary firefoxBinary = new FirefoxBinary();
+        firefoxBinary.addCommandLineOptions("--headless");
         if ((System.getProperty("os.name").substring(0, 3)).equals("Lin")) {
             System.setProperty("webdriver.gecko.driver", "Drivers//Linux//geckodriver");
         } else {
             System.setProperty("webdriver.gecko.driver", "Drivers\\Windows\\geckodriver.exe");
         }
-
-        driver = new FirefoxDriver();
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        firefoxOptions.setBinary(firefoxBinary);
+        driver = new FirefoxDriver(firefoxOptions);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get("https://stackoverflow.com");
         mainPage = new MainPage(driver);

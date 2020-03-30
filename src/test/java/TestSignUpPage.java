@@ -5,7 +5,9 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 import java.util.concurrent.TimeUnit;
 
@@ -19,13 +21,16 @@ public class TestSignUpPage {
 
     @Before
     public void setMainPage() {
+        FirefoxBinary firefoxBinary = new FirefoxBinary();
+        firefoxBinary.addCommandLineOptions("--headless");
         if ((System.getProperty("os.name").substring(0, 3)).equals("Lin")) {
             System.setProperty("webdriver.gecko.driver", "Drivers//Linux//geckodriver");
         } else {
             System.setProperty("webdriver.gecko.driver", "Drivers\\Windows\\geckodriver.exe");
         }
-
-        driver = new FirefoxDriver();
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        firefoxOptions.setBinary(firefoxBinary);
+        driver = new FirefoxDriver(firefoxOptions);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get("https://stackoverflow.com");
