@@ -1,5 +1,6 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public abstract class PageNavigation {
     private By buttonLogIn = By.xpath("//header//li[@class='-ctas']//a[1]");
@@ -9,6 +10,7 @@ public abstract class PageNavigation {
     private By buttonGoogle = By.xpath("//div[@id='openid-buttons']//button[1]");
     private By buttonGitHub = By.xpath("//div[@id='openid-buttons']//button[2]");
     private By buttonFaceBook = By.xpath("//div[@id='openid-buttons']//button[3]");
+    private By colorPage = By.xpath("//body");
 
     public void clickOnPage(WebDriver driver, By xpath) {
         driver.findElement(xpath).click();
@@ -36,6 +38,14 @@ public abstract class PageNavigation {
 
     public String getHeadingText(WebDriver driver,By xpath) {
         return driver.findElement(xpath).getText();
+    }
+
+    public String colorPage(WebDriver driver) {
+        return driver.findElement(colorPage).getCssValue("background-color");
+    }
+
+    public void clearField(WebDriver driver, By xpath) {
+        driver.findElement(xpath).clear();
     }
 
     public By getButtonFaceBook() {
