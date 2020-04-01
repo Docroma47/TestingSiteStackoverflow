@@ -1,11 +1,9 @@
 import org.junit.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.interactions.Action;
-import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -21,13 +19,16 @@ public class TestUserOptions {
 
     @BeforeClass
     public static void setMainPage() {
+        FirefoxBinary firefoxBinary = new FirefoxBinary();
+        firefoxBinary.addCommandLineOptions("--headless");
         if ((System.getProperty("os.name").substring(0, 3)).equals("Lin")) {
             System.setProperty("webdriver.gecko.driver", "Drivers/Linux/geckodriver");
         } else {
             System.setProperty("webdriver.gecko.driver", "Drivers\\Windows\\geckodriver.exe");
         }
-
-        driver = new FirefoxDriver();
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        firefoxOptions.setBinary(firefoxBinary);
+        driver = new FirefoxDriver(firefoxOptions);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get("https://stackoverflow.com");
@@ -60,28 +61,27 @@ public class TestUserOptions {
     }
 
     @Test
-    public void checkingRadioButton() throws AWTException {
+    public void checkingRadioButton() throws InterruptedException {
         By enableKeyboard = By.xpath("//input[@id='keyboardShortcuts']");
         By radioButton = By.xpath("//input[@id='hotNetworkQuestions']");
         By network = By.xpath("/html/body/div[3]/div[2]/div[2]/div[8]");
         By hideLeftPanel = By.xpath("//input[@id=\"flag-leftnav\"]");
 
+        logInPage.clickOnPage(driver, profile);
+        logInPage.clickOnPage(driver, editProfile);
         logInPage.clickOnPage(driver, preference);
 
         if (!driver.findElement(enableKeyboard).isSelected()) logInPage.clickOnPage(driver, enableKeyboard);
-        logInPage.clickHomeButton(driver);
-        Robot robot = new Robot();
-        robot.keyPress(KeyEvent.VK_SHIFT);
-        robot.keyPress(KeyEvent.VK_SLASH);
-        WebElement console = driver.findElement(By.xpath("//div[@class='keyboard-console']"));
-        Assert.assertTrue(console.isEnabled());
-        robot.keyPress(KeyEvent.VK_SHIFT);
-        robot.keyPress(KeyEvent.VK_SLASH);
-        Assert.assertFalse(console.isDisplayed());
-        robot.keyRelease(KeyEvent.VK_SHIFT);
-        robot.keyRelease(KeyEvent.VK_SLASH);
 
+        driver.findElement(By.tagName("body")).sendKeys(Keys.SHIFT + "?");
+        sleep(1000);
+        driver.findElement(By.tagName("body")).sendKeys("G");
+        sleep(1000);
+        driver.findElement(By.tagName("body")).sendKeys("H");
+        sleep(1000);
+        Assert.assertEquals("https://stackoverflow.com/", driver.getCurrentUrl());
         driver.navigate().back();
+
         if (driver.findElement(enableKeyboard).isSelected()) logInPage.clickOnPage(driver, enableKeyboard);
 
         Assert.assertTrue(driver.findElement(By.xpath("//div[@id='left-sidebar']")).isDisplayed());
