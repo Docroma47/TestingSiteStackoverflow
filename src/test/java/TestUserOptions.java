@@ -29,6 +29,7 @@ public class TestUserOptions {
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions.setBinary(firefoxBinary);
         driver = new FirefoxDriver(firefoxOptions);
+//        driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get("https://stackoverflow.com");
@@ -53,7 +54,7 @@ public class TestUserOptions {
         logInPage.clickOnPage(driver, profile);
         logInPage.clickOnPage(driver, editProfile);
         logInPage.clickOnPage(driver, preference);
-        if (driver.findElement(darkMode).isSelected()) logInPage.clickOnPage(driver, lightMode);
+        logInPage.clickOnPage(driver, lightMode);
         Assert.assertEquals(colorWhite, logInPage.colorPage(driver));
         logInPage.clickOnPage(driver, darkMode);
         Assert.assertEquals(colorBlack, logInPage.colorPage(driver));
@@ -66,7 +67,7 @@ public class TestUserOptions {
         By radioButton = By.xpath("//input[@id='hotNetworkQuestions']");
         By network = By.xpath("/html/body/div[3]/div[2]/div[2]/div[8]");
         By hideLeftPanel = By.xpath("//input[@id=\"flag-leftnav\"]");
-
+//
         logInPage.clickOnPage(driver, profile);
         logInPage.clickOnPage(driver, editProfile);
         logInPage.clickOnPage(driver, preference);
@@ -105,6 +106,8 @@ public class TestUserOptions {
         By buttonSave = By.xpath("//input[@value=\"Save Profile\"]");
         By textAboutMe = By.xpath("//*[@id=\"wmd-input\"]");
         By errorText = By.xpath("//div[@class=\"form-error\"]");
+        logInPage.clickOnPage(driver, profile);
+        logInPage.clickOnPage(driver, editProfile);
 
         JavascriptExecutor jse = (JavascriptExecutor)driver;
 
@@ -122,7 +125,7 @@ public class TestUserOptions {
         logInPage.inputTextInPage(realName, randomName().substring(0, 4), driver);
         sleep(2000);
         logInPage.clickOnPage(driver, buttonSave);
-        driver.navigate().refresh();
+        logInPage.clickOnPage(driver, editProfile);
         jse.executeScript("window.scrollBy(0, -1000)", "");
 
         Assert.assertEquals("Russia123", driver.findElement(location).getAttribute("value"));
@@ -136,15 +139,17 @@ public class TestUserOptions {
         logInPage.inputTextInPage(displayName, name , driver);
         jse.executeScript("window.scrollBy(0, 1000)", "");
         logInPage.clickOnPage(driver, buttonSave);
+        logInPage.clickOnPage(driver, buttonSave);
         String error = logInPage.getHeadingText(driver, errorText);
         Assert.assertEquals("Oops! There was a problem updating your profile:\n" +
                 "temporary error updating your profile -- please try again!\n" +
                 "Display name may only be changed once every 30 days; you may change again on Apr 30 at 15:47", error);
+        sleep(4000);
         jse.executeScript("window.scrollBy(0, -1000)", "");
     }
 
     @Test
-    public  void button() {
+    public  void button() throws InterruptedException {
         By developerStory = By.xpath("//div[text()='Developer Story']");
         By activity = By.xpath("//a[text()='Activity']");
         By prof = By.xpath("//a[text()='Profile']");
@@ -162,6 +167,7 @@ public class TestUserOptions {
         By hideCommunities = By.xpath("//a[text()='hide communities']");
         By deleteProfile = By.xpath("//a[text()='delete profile']");
         By privileges = By.xpath("//a[text()='privileges']");
+        
 
         logInPage.clickOnPage(driver, developStoryPreference);
         Assert.assertEquals("Developer Story preferences", driver.findElement(By.xpath("/html//h1")).getText());
@@ -191,7 +197,8 @@ public class TestUserOptions {
         logInPage.clickOnPage(driver, privileges);
         System.out.println(logInPage.getHeadingText(driver, By.xpath("//h1[@id='h-badges']/a[1]")));
         Assert.assertEquals("Help Center", driver.findElement(By.xpath("//h1[@id='h-badges']/a[1]")).getText());
-        driver.navigate().back();
+        System.out.println(logInPage.getHeadingText(driver, By.xpath("//h1[@id='h-badges']/a[1]")));
+        driver.get("https://stackoverflow.com/users/tag-notifications/13143191");
         logInPage.clickOnPage(driver, developerStory);
         Assert.assertEquals("Kickstart your Developer Story.", driver.findElement(By.xpath("//div[@id='content']/div[3]/div[1]//h2")).getText());
         logInPage.clickOnPage(driver, activity);
@@ -205,7 +212,7 @@ public class TestUserOptions {
         By addTag = By.xpath("//div[@id='watching-1']//a[text()='Add a tag']");
         By inputTagField = By.xpath("//div[@id=\"watching-1\"]//div[@class=\"input-group\"]//input");
         By buttonDone = By.xpath("//div[@id=\"watching-1\"]//a[text()='Done']");
-        By watchTag = By.xpath("//button[text()='Watch tag']");
+
         By tagWatchingIgnoring = By.xpath("//a[text()='tag watching & ignoring']");
 
         logInPage.clickOnPage(driver, editProfile);
@@ -219,6 +226,7 @@ public class TestUserOptions {
         Assert.assertEquals(0, size());
 
         logInPage.clickOnPage(driver, addTag);
+        By watchTag = By.xpath("//button[text()='Watch tag']");
         logInPage.inputTextInPage(inputTagField, "java", driver);
         logInPage.clickOnPage(driver, watchTag);
         logInPage.inputTextInPage(inputTagField, "automated-tests", driver);
