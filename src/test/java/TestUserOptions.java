@@ -16,26 +16,28 @@ public class TestUserOptions {
     private By preference = By.xpath("//a[text()='preferences']");
     private By editProfile = By.xpath("//a[text()='Edit profile and settings']");
     private By profile = By.xpath("//a[@class='my-profile js-gps-track']");
+    private By tagWatchingIgnoring = By.xpath("//a[text()='tag watching & ignoring']");
 
     @BeforeClass
-    public static void setMainPage() {
+    public static void setUserOptions() {
         FirefoxBinary firefoxBinary = new FirefoxBinary();
         firefoxBinary.addCommandLineOptions("--headless");
+
         if ((System.getProperty("os.name").substring(0, 3)).equals("Lin")) {
             System.setProperty("webdriver.gecko.driver", "Drivers/Linux/geckodriver");
         } else {
             System.setProperty("webdriver.gecko.driver", "Drivers\\Windows\\geckodriver.exe");
         }
+
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions.setBinary(firefoxBinary);
         driver = new FirefoxDriver(firefoxOptions);
-//        driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get("https://stackoverflow.com");
-        MainPage mainPage = new MainPage(driver);
-        mainPage.clickOnLogIn(driver);
+
         logInPage = new LogInPage(driver);
+        logInPage.clickOnLogIn(driver);
         logInPage.inputLogIn("romakolotov47@gmail.com", "79213980538r");
         logInPage.clickSubmitButton();
     }
@@ -51,13 +53,13 @@ public class TestUserOptions {
         String colorBlack = "rgb(45, 45, 45)";
         By darkMode = By.xpath("//input[@id='enableForcedDarkmode']");
         By lightMode = By.xpath("//input[@id='enableForcedLightmode']");
-        logInPage.clickOnPage(driver, profile);
-        logInPage.clickOnPage(driver, editProfile);
-        logInPage.clickOnPage(driver, preference);
+        goToProfile();
+
         logInPage.clickOnPage(driver, lightMode);
         Assert.assertEquals(colorWhite, logInPage.colorPage(driver));
         logInPage.clickOnPage(driver, darkMode);
         Assert.assertEquals(colorBlack, logInPage.colorPage(driver));
+
         logInPage.clickOnPage(driver, lightMode);
     }
 
@@ -67,11 +69,8 @@ public class TestUserOptions {
         By radioButton = By.xpath("//input[@id='hotNetworkQuestions']");
         By network = By.xpath("/html/body/div[3]/div[2]/div[2]/div[8]");
         By hideLeftPanel = By.xpath("//input[@id=\"flag-leftnav\"]");
-//
-        logInPage.clickOnPage(driver, profile);
-        logInPage.clickOnPage(driver, editProfile);
-        logInPage.clickOnPage(driver, preference);
 
+        goToProfile();
         if (!driver.findElement(enableKeyboard).isSelected()) logInPage.clickOnPage(driver, enableKeyboard);
 
         driver.findElement(By.tagName("body")).sendKeys(Keys.SHIFT + "?");
@@ -85,14 +84,17 @@ public class TestUserOptions {
 
         if (driver.findElement(enableKeyboard).isSelected()) logInPage.clickOnPage(driver, enableKeyboard);
 
-        Assert.assertTrue(driver.findElement(By.xpath("//div[@id='left-sidebar']")).isDisplayed());
+        Assert.assertTrue(isDisplayed(By.xpath("//div[@id='left-sidebar']")));
         logInPage.clickOnPage(driver, hideLeftPanel);
-        Assert.assertFalse(driver.findElement(By.xpath("//div[@id='left-sidebar']")).isDisplayed());
+
+        Assert.assertFalse(isDisplayed(By.xpath("//div[@id='left-sidebar']")));
         logInPage.clickOnPage(driver, hideLeftPanel);
 
         if (!driver.findElement(radioButton).isSelected()) logInPage.clickOnPage(driver, radioButton);
+
         logInPage.clickHomeButton(driver);
         Assert.assertEquals(driver.findElement(network).getAttribute("id"), "recent-tags");
+
         driver.navigate().back();
         if (driver.findElement(radioButton).isSelected()) logInPage.clickOnPage(driver, radioButton);
     }
@@ -106,6 +108,7 @@ public class TestUserOptions {
         By buttonSave = By.xpath("//input[@value=\"Save Profile\"]");
         By textAboutMe = By.xpath("//*[@id=\"wmd-input\"]");
         By errorText = By.xpath("//div[@class=\"form-error\"]");
+
         logInPage.clickOnPage(driver, profile);
         logInPage.clickOnPage(driver, editProfile);
 
@@ -120,36 +123,46 @@ public class TestUserOptions {
         logInPage.inputTextInPage(title, "BULDOZERS!!!", driver);
         logInPage.clearField(driver, textAboutMe);
         logInPage.inputTextInPage(textAboutMe, "WAAAAAAAGH! I need more imperial guard! FOR THE EMPIRE!AND ME!3", driver);
+
         jse.executeScript("window.scrollBy(0, 1000)", "");
+
         logInPage.clearField(driver, realName);
         logInPage.inputTextInPage(realName, randomName().substring(0, 4), driver);
         sleep(2000);
         logInPage.clickOnPage(driver, buttonSave);
-        logInPage.clickOnPage(driver, editProfile);
+
         jse.executeScript("window.scrollBy(0, -1000)", "");
+
+        logInPage.clickOnPage(driver, editProfile);
 
         Assert.assertEquals("Russia123", driver.findElement(location).getAttribute("value"));
         Assert.assertEquals("BULDOZERS!!!", driver.findElement(title).getAttribute("value"));
         Assert.assertEquals("WAAAAAAAGH! I need more imperial guard! FOR THE EMPIRE!AND ME!3", driver.findElement(textAboutMe).getAttribute("value"));
+
         jse.executeScript("window.scrollBy(0, 1000)", "");
+
         Assert.assertEquals(name.substring(0, 4), driver.findElement(realName).getAttribute("value"));
+
         jse.executeScript("window.scrollBy(0, -1000)", "");
 
         logInPage.clearField(driver, displayName);
         logInPage.inputTextInPage(displayName, name , driver);
+
         jse.executeScript("window.scrollBy(0, 1000)", "");
-        logInPage.clickOnPage(driver, buttonSave);
+
+
         logInPage.clickOnPage(driver, buttonSave);
         String error = logInPage.getHeadingText(driver, errorText);
         Assert.assertEquals("Oops! There was a problem updating your profile:\n" +
                 "temporary error updating your profile -- please try again!\n" +
                 "Display name may only be changed once every 30 days; you may change again on Apr 30 at 15:47", error);
+
         sleep(4000);
         jse.executeScript("window.scrollBy(0, -1000)", "");
     }
 
     @Test
-    public  void button() throws InterruptedException {
+    public  void button() {
         By developerStory = By.xpath("//div[text()='Developer Story']");
         By activity = By.xpath("//a[text()='Activity']");
         By prof = By.xpath("//a[text()='Profile']");
@@ -157,7 +170,7 @@ public class TestUserOptions {
         By developStoryPreference = By.xpath("//a[text()='Developer Story preferences']");
         By jobPreferences = By.xpath("//a[text()='Job preferences']");
         By editEmailSettings = By.xpath("//a[text()='edit email settings']");
-        By tagWatchingIgnoring = By.xpath("//a[text()='tag watching & ignoring']");
+
         By communityDigests = By.xpath("//a[text()='community digests']");
         By questionSubscriptions = By.xpath("//a[text()='question subscriptions ']");
         By savedJobSearchAlerts = By.xpath("//a[text()='saved job search alerts']");
@@ -168,43 +181,29 @@ public class TestUserOptions {
         By deleteProfile = By.xpath("//a[text()='delete profile']");
         By privileges = By.xpath("//a[text()='privileges']");
         
+        By xpathTextHtmlH1 = By.xpath("/html//h1");
+        By xpathTextH1 = By.xpath("//h1");
 
-        logInPage.clickOnPage(driver, developStoryPreference);
-        Assert.assertEquals("Developer Story preferences", driver.findElement(By.xpath("/html//h1")).getText());
-        logInPage.clickOnPage(driver, jobPreferences);
-        Assert.assertEquals("Job preferences", driver.findElement(By.xpath("/html//h1")).getText());
-        logInPage.clickOnPage(driver, editEmailSettings);
-        Assert.assertEquals("Edit Email Settings", driver.findElement(By.xpath("/html//h1")).getText());
-        logInPage.clickOnPage(driver, tagWatchingIgnoring);
-        Assert.assertEquals("Tag Watching", driver.findElement(By.xpath("//div[1]/h1")).getText());
-        logInPage.clickOnPage(driver, communityDigests);
-        Assert.assertEquals("Community Digests", driver.findElement(By.xpath("/html//h1")).getText());
-        logInPage.clickOnPage(driver, questionSubscriptions);
-        Assert.assertEquals("Stack Exchange", driver.findElement(By.xpath("//header//h1")).getText());
+        Assert.assertEquals("Developer Story preferences", returnText(developStoryPreference, xpathTextHtmlH1));
+        Assert.assertEquals("Job preferences", returnText(jobPreferences, xpathTextHtmlH1));
+        Assert.assertEquals("Edit Email Settings", returnText(editEmailSettings, xpathTextHtmlH1));
+        Assert.assertEquals("Tag Watching", returnText(tagWatchingIgnoring, By.xpath("//div[1]/h1")));
+        Assert.assertEquals("Community Digests", returnText(communityDigests, xpathTextHtmlH1));
+        Assert.assertEquals("Stack Exchange", returnText(questionSubscriptions, By.xpath("//header//h1")));
+
         driver.navigate().back();
-        logInPage.clickOnPage(driver, savedJobSearchAlerts);
-        Assert.assertEquals("Saved Job Search Alerts", driver.findElement(By.xpath("//h1")).getText());
-        logInPage.clickOnPage(driver, flair);
-        Assert.assertEquals("Flair", driver.findElement(By.xpath("//h1")).getText());
-        logInPage.clickOnPage(driver, applications);
-        Assert.assertEquals("Applications", driver.findElement(By.xpath("//h1")).getText());
-        logInPage.clickOnPage(driver, myLogins);
-        Assert.assertEquals("My Logins", driver.findElement(By.xpath("//h1")).getText());
-        logInPage.clickOnPage(driver, hideCommunities);
-        Assert.assertEquals("Hide Communities", driver.findElement(By.xpath("//h1")).getText());
-        logInPage.clickOnPage(driver, deleteProfile);
-        Assert.assertEquals("Delete Profile", driver.findElement(By.xpath("//h1")).getText());
-        logInPage.clickOnPage(driver, privileges);
-        System.out.println(logInPage.getHeadingText(driver, By.xpath("//h1[@id='h-badges']/a[1]")));
-        Assert.assertEquals("Help Center", driver.findElement(By.xpath("//h1[@id='h-badges']/a[1]")).getText());
-        System.out.println(logInPage.getHeadingText(driver, By.xpath("//h1[@id='h-badges']/a[1]")));
+
+        Assert.assertEquals("Saved Job Search Alerts", returnText(savedJobSearchAlerts, xpathTextH1));
+        Assert.assertEquals("Flair", returnText(flair, xpathTextH1));
+        Assert.assertEquals("Applications", returnText(applications, xpathTextH1));
+        Assert.assertEquals("My Logins", returnText(myLogins, xpathTextH1));
+        Assert.assertEquals("Hide Communities", returnText(hideCommunities, xpathTextH1));
+        Assert.assertEquals("Delete Profile", returnText(deleteProfile, xpathTextH1));
+        Assert.assertEquals("Help Center", returnText(privileges, By.xpath("//h1[@id='h-badges']/a[1]")));
         driver.get("https://stackoverflow.com/users/tag-notifications/13143191");
-        logInPage.clickOnPage(driver, developerStory);
-        Assert.assertEquals("Kickstart your Developer Story.", driver.findElement(By.xpath("//div[@id='content']/div[3]/div[1]//h2")).getText());
-        logInPage.clickOnPage(driver, activity);
-        Assert.assertEquals("Answers (0)", driver.findElement(By.xpath("//div[@id='user-panel-answers']//h3//a")).getText());
-        logInPage.clickOnPage(driver, prof);
-        Assert.assertEquals("Docmom47", driver.findElement(By.xpath("//h2//div")).getText());
+        Assert.assertEquals("Kickstart your Developer Story.", returnText(developerStory, By.xpath("//div[@id='content']/div[3]/div[1]//h2")));
+        Assert.assertEquals("Answers (0)", returnText(activity, By.xpath("//div[@id='user-panel-answers']//h3//a")));
+        Assert.assertEquals("Docmom47", returnText(prof, By.xpath("//h2//div")));
     }
 
     @Test
@@ -212,8 +211,6 @@ public class TestUserOptions {
         By addTag = By.xpath("//div[@id='watching-1']//a[text()='Add a tag']");
         By inputTagField = By.xpath("//div[@id=\"watching-1\"]//div[@class=\"input-group\"]//input");
         By buttonDone = By.xpath("//div[@id=\"watching-1\"]//a[text()='Done']");
-
-        By tagWatchingIgnoring = By.xpath("//a[text()='tag watching & ignoring']");
 
         logInPage.clickOnPage(driver, editProfile);
         logInPage.clickOnPage(driver, tagWatchingIgnoring);
@@ -248,5 +245,20 @@ public class TestUserOptions {
         Random random = new Random();
         int randomIntName = random.nextInt(999);
         return "Roma" + randomIntName;
+    }
+
+    public void goToProfile() {
+        logInPage.clickOnPage(driver, profile);
+        logInPage.clickOnPage(driver, editProfile);
+        logInPage.clickOnPage(driver, preference);
+    }
+
+    public Boolean isDisplayed(By xpath) {
+        return driver.findElement(xpath).isDisplayed();
+    }
+
+    public String returnText(By xpathClick, By xpathText) {
+        logInPage.clickOnPage(driver, xpathClick);
+        return driver.findElement(xpathText).getText();
     }
 }

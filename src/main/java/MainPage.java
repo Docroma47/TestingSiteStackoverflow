@@ -13,24 +13,13 @@ public class MainPage extends PageNavigation {
     private By buttonCustomers = By.xpath("//header//a[text()='Customers']");
     private By buttonUseCases = By.xpath("//header//a[text()='Use cases']");
     private By panelButtonUsers = By.xpath("//a[@id='nav-users']");
-    private By buttonDevelopers = By.xpath("//a[@href='#for-developers']");
-    private By buttonBusinesses = By.xpath("//a[@href='#for-businesses']");
     private By footerButtonHome = By.xpath("//div[@class=\"site-footer--logo\"]//a");
     private By footerButtonHelp = By.xpath("//footer//a[text()='Help']");
     private By footerButtonRightPanelOther = By.xpath("//footer//a[@data-target='Other']");
     private By footerButtonBack = By.xpath("//footer//a[@class='site-footer--back js-footer-back']");
 
-
-    public By getButtonBusinesses() {
-        return buttonBusinesses;
-    }
-
     public By getButtonCustomers() {
         return buttonCustomers;
-    }
-
-    public By getButtonDevelopers() {
-        return buttonDevelopers;
     }
 
     public By getButtonProduct() {

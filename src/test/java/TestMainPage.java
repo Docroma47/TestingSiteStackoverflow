@@ -16,11 +16,13 @@ public class TestMainPage {
     public static void setMainPage() {
         FirefoxBinary firefoxBinary = new FirefoxBinary();
         firefoxBinary.addCommandLineOptions("--headless");
+
         if ((System.getProperty("os.name").substring(0, 3)).equals("Lin")) {
             System.setProperty("webdriver.gecko.driver", "Drivers/Linux/geckodriver");
         } else {
             System.setProperty("webdriver.gecko.driver", "Drivers\\Windows\\geckodriver.exe");
         }
+
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions.setBinary(firefoxBinary);
         driver = new FirefoxDriver(firefoxOptions);
@@ -37,74 +39,66 @@ public class TestMainPage {
 
     @Test
     public void testButtonOnTopBarMainPage() {
-        mainPage.clickOnSignUp(driver);
-        String urlSignUp = driver.getCurrentUrl();
-        Assert.assertEquals("https://stackoverflow.com/users/signup?ssrc=head&returnurl=%2fusers%2fstory%2fcurrent", urlSignUp);
+        Assert.assertEquals("https://stackoverflow.com/users/signup?ssrc=head&returnurl=%2fusers%2fstory%2fcurrent", getUrlPage(mainPage.getButtonSignUp()));
         mainPage.clickHomeButton(driver);
 
-        mainPage.clickOnLogIn(driver);
-        String urlLogIn = driver.getCurrentUrl();
-        Assert.assertEquals("https://stackoverflow.com/users/login?ssrc=head&returnurl=https%3a%2f%2fstackoverflow.com%2f", urlLogIn);
+        Assert.assertEquals("https://stackoverflow.com/users/login?ssrc=head&returnurl=https%3a%2f%2fstackoverflow.com%2f", getUrlPage(mainPage.getButtonLogIn()));
         mainPage.clickHomeButton(driver);
 
-        mainPage.clickOnPage(driver, mainPage.getButtonProduct());
-        Boolean panelProductActive = driver.findElement(By.xpath("//div[@id=\"products-popover\"]//a[@href=\"/questions\"]")).isDisplayed();
-        Assert.assertTrue(panelProductActive);
+        Assert.assertTrue(st(mainPage.getButtonProduct(), By.xpath("//div[@id=\"products-popover\"]//a[@href=\"/questions\"]")));
 
-
-        mainPage.clickOnPage(driver, mainPage.getButtonCustomers());
-        String urlCustomers = driver.getCurrentUrl();
-        Assert.assertEquals("https://stackoverflow.com/teams/customers", urlCustomers);
+        Assert.assertEquals("https://stackoverflow.com/teams/customers", getUrlPage(mainPage.getButtonCustomers()));
         mainPage.clickOnPage(driver, By.xpath("//div[@id=\"product-main-nav\"]//a[@href=\"/\"]"));
 
-
-        mainPage.clickOnPage(driver, mainPage.getButtonUseCases());
-        String urlUseCase = driver.getCurrentUrl();
-        Assert.assertEquals("https://stackoverflow.com/teams/use-cases", urlUseCase);
+        Assert.assertEquals("https://stackoverflow.com/teams/use-cases", getUrlPage(mainPage.getButtonUseCases()));
         mainPage.clickOnPage(driver, By.xpath("//div[@id=\"product-main-nav\"]//a[@href=\"/\"]"));
 
-        mainPage.clickOnPage(driver, mainPage.getPanel());
-        Boolean panelOnMainPageActive = driver.findElement(mainPage.getPanel()).isDisplayed();
-        Assert.assertTrue(panelOnMainPageActive);
-        mainPage.clickOnPage(driver, mainPage.getPanelButtonUsers());
-        String urlUsers = driver.getCurrentUrl();
-        Assert.assertEquals("https://stackoverflow.com/users", urlUsers);
-        mainPage.clickOnPage(driver, By.xpath("//a[@href=\"https://stackoverflow.com\"]//span[text()='Stack Overflow']"));
-        String urlHome = driver.getCurrentUrl();
-        Assert.assertEquals("https://stackoverflow.com/", urlHome);
+        Assert.assertTrue(st(mainPage.getPanel(), mainPage.getPanel()));
+
+        Assert.assertEquals("https://stackoverflow.com/users", getUrlPage(mainPage.getPanelButtonUsers()));
+
+        Assert.assertEquals("https://stackoverflow.com/", getUrlPage(By.xpath("//a[@href=\"https://stackoverflow.com\"]//span[text()='Stack Overflow']")));
     }
 
     @Test
     public void testFooterButton() {
-        System.out.println(driver.findElement(By.xpath("//a[@aria-label=\"notice-dismiss\"]")).isDisplayed());
         if (driver.findElement(By.xpath("//a[@aria-label=\"notice-dismiss\"]")).isDisplayed()) {
             mainPage.clickOnPage(driver, By.xpath("//a[@aria-label=\"notice-dismiss\"]"));
         }
         JavascriptExecutor jse = (JavascriptExecutor)driver;
         jse.executeScript("window.scrollBy(0, 5000)", "");
 
-        mainPage.clickOnPage(driver, mainPage.getFooterButtonHelp());
-        String textHelpCenter = mainPage.getHeadingText(driver, By.xpath("//div[@class=\"wiki-ph-content\"]//h2"));
-        Assert.assertEquals("Welcome to the Stack Overflow Help Center!", textHelpCenter);
-
+        Assert.assertEquals("Welcome to the Stack Overflow Help Center!", getNameButton(mainPage.getFooterButtonHelp(), By.xpath("//div[@class=\"wiki-ph-content\"]//h2")));
         mainPage.clickOnPage(driver, mainPage.getHomeImageButton());
+
         jse.executeScript("window.scrollBy(0, 5000)", "");
 
         mainPage.clickOnPage(driver, mainPage.getFooterButtonRightPanelOther());
-        mainPage.clickOnPage(driver, By.xpath("//a[@href=\"https://data.stackexchange.com\"]"));
-        String urlData = driver.getCurrentUrl();
-        Assert.assertEquals("https://data.stackexchange.com/", urlData);
-
+        Assert.assertEquals("https://data.stackexchange.com/", getUrlPage(By.xpath("//a[@href=\"https://data.stackexchange.com\"]")));
         driver.get(homePage);
+
         jse.executeScript("window.scrollBy(0, 5000)", "");
+
         mainPage.clickOnPage(driver, mainPage.getFooterButtonRightPanelOther());
+        Assert.assertEquals("Help", getNameButton(mainPage.getFooterButtonBack(), mainPage.getFooterButtonHelp()));
 
-
-        mainPage.clickOnPage(driver, mainPage.getFooterButtonBack());
-        String buttonHelp = mainPage.getHeadingText(driver, mainPage.getFooterButtonHelp());
-        Assert.assertEquals("Help", buttonHelp);
         mainPage.clickOnPage(driver, mainPage.getFooterButtonHome());
         jse.executeScript("window.scrollBy(0, -5000)", "");
+    }
+
+    public String getUrlPage(By xpath) {
+        mainPage.clickOnPage(driver, xpath);
+        return driver.getCurrentUrl();
+    }
+
+    public Boolean st(By xpathOnClick, By xpathElementBool) {
+        mainPage.clickOnPage(driver, xpathOnClick);
+        return driver.findElement(xpathElementBool).isDisplayed();
+    }
+
+    public String getNameButton(By xpathClick, By xpathReturnString) {
+        mainPage.clickOnPage(driver, xpathClick);
+        return mainPage.getHeadingText(driver, xpathReturnString);
     }
 
 }

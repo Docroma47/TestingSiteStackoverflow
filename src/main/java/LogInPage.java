@@ -1,6 +1,5 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 public class LogInPage extends PageNavigation {
     private WebDriver driver;
@@ -16,8 +15,6 @@ public class LogInPage extends PageNavigation {
     private By linkPassword = By.xpath("//a[text()='Forgot password?']");
     private By linkSignUp = By.xpath("//div[@class='grid--cell']//a[text()='Sign up']");
     private By linkTalent = By.xpath("//a[@name='talent']");
-    private By alertEmail = By.xpath("//form[@id='login-form']/div[1]/p[1]");
-    private By alertPassword =  By.xpath("//form[@id='login-form']/div[2]/p[1]");
 
     public void clickImageHomeButton() {
         driver.findElement(homeImageButton).click();
@@ -36,28 +33,8 @@ public class LogInPage extends PageNavigation {
         driver.findElement(submitLogIn).click();
     }
 
-    public By getAlertEmail() {
-        return alertEmail;
-    }
-
-    public By getAlertPassword() {
-        return alertPassword;
-    }
-
     public By getHomeImageButton() {
         return homeImageButton;
-    }
-
-    public By getSubmitLogIn() {
-        return submitLogIn;
-    }
-
-    public By getInputEmail() {
-        return inputEmail;
-    }
-
-    public By getInputPassword() {
-        return inputPassword;
     }
 
     public By getLinkPassword() {
@@ -71,4 +48,5 @@ public class LogInPage extends PageNavigation {
     public By getLinkTalent() {
         return linkTalent;
     }
+
 }

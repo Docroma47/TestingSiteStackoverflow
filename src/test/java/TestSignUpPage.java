@@ -17,9 +17,10 @@ public class TestSignUpPage {
     private String homePage = "https://stackoverflow.com/users/signup?ssrc=head&returnurl=%2fusers%2fstory%2fcurrent";
 
     @Before
-    public void setMainPage() {
+    public void setSignUpPagee() {
         FirefoxBinary firefoxBinary = new FirefoxBinary();
         firefoxBinary.addCommandLineOptions("--headless");
+
         if ((System.getProperty("os.name").substring(0, 3)).equals("Lin")) {
             System.setProperty("webdriver.gecko.driver", "Drivers/Linux/geckodriver");
         } else {

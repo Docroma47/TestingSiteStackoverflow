@@ -1,6 +1,7 @@
 import org.junit.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -14,7 +15,7 @@ public class TestLogInPage {
     private String homePage = "https://stackoverflow.com";
 
     @BeforeClass
-    public static void setMainPage() {
+    public static void setLogInPage() {
         FirefoxBinary firefoxBinary = new FirefoxBinary();
         firefoxBinary.addCommandLineOptions("--headless");
         if ((System.getProperty("os.name").substring(0, 3)).equals("Lin")) {
@@ -39,7 +40,7 @@ public class TestLogInPage {
 
     @Test
     public void checkingAlertsAndInputData() {
-        mainPage.clickOnLogIn(driver);
+        logInPage.clickOnLogIn(driver);
         logInPage.inputLogIn("romakolotov47@gmail.com", "79213980538r");
         logInPage.clickSubmitButton();
         logInPage.clickOnPage(driver, By.xpath("//a[@href='/users/13143191/docmom47']"));
@@ -53,21 +54,21 @@ public class TestLogInPage {
 
     @Test
     public void checkingLinksOnLogInPage() {
-        mainPage.clickOnLogIn(driver);
+        logInPage.clickOnLogIn(driver);
         logInPage.clickImageHomeButton();
         Assert.assertEquals("https://stackoverflow.com/", driver.getCurrentUrl());
 
-        logInPage.clickOnLogIn(driver);
-        logInPage.clickOnPage(driver, logInPage.getLinkPassword());
-        Assert.assertEquals("https://stackoverflow.com/users/account-recovery", driver.getCurrentUrl());
+        Assert.assertEquals("https://stackoverflow.com/users/account-recovery", linksLogInPage(logInPage.getLinkPassword()));
 
-        logInPage.clickOnLogIn(driver);
-        logInPage.clickOnPage(driver, logInPage.getLinkSignUp());
-        Assert.assertEquals("https://stackoverflow.com/users/signup?ssrc=head", driver.getCurrentUrl());
+        Assert.assertEquals("https://stackoverflow.com/users/signup?ssrc=head", linksLogInPage(logInPage.getLinkSignUp()));
         driver.get(homePage);
 
+        Assert.assertEquals("https://talent.stackoverflow.com/users/login", linksLogInPage(logInPage.getLinkTalent()));
+    }
+
+    public String linksLogInPage(By xpath) {
         logInPage.clickOnLogIn(driver);
-        logInPage.clickOnPage(driver, logInPage.getLinkTalent());
-        Assert.assertEquals("https://talent.stackoverflow.com/users/login", driver.getCurrentUrl());
+        logInPage.clickOnPage(driver, xpath);
+        return driver.getCurrentUrl();
     }
 }

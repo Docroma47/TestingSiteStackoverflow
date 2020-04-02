@@ -9,8 +9,5 @@
         <module name="TestingSiteStackoverflow" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="TestingSiteStackoverflow" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
